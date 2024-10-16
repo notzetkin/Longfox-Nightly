@@ -1,4 +1,4 @@
-# Longfox-Nightly: The Night Of The Son Of Plex
+# Longfox-Nightly: The Night Of The Living Plex
 since firefox added window transparency in latest nightly build i had to commemorate
 
 ## known bugs:
