@@ -189,7 +189,9 @@
 		  appearance: auto !important;
 		  -moz-default-appearance: none !important;
 		}
-
+        scrollbar {
+		background-color: transparent !important;
+		}
 		slider {
 		  background-color: transparent !important;
 		}
@@ -242,7 +244,6 @@
 		scrollbar scrollbarbutton {
 		  background-color: white !important;
 		  border-radius: 0px !important;
-	      
 		  min-height: 16px !important;
 		  max-height: 16px !important;
 		  min-width: 16px !important;
@@ -280,18 +281,32 @@
 		 border-right: 1px solid white !important;
 		 background-image: linear-gradient(180deg, -moz-dialog 0%, white 100%) !important;
 		}  
-		  tooltip[default="true"] {
-		  background-color: accentcolor !important;
-          background-image: linear-gradient(
-				90deg,
-				hsl(calc(var(--you-h) - 3), calc(var(--you-s) + 28%), calc(var(--you-l) + 14%)) 0%,
-				hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 2%), calc(var(--you-l) + 2%)) 50%,
-				hsl(calc(var(--you-h) - 3), calc(var(--you-s) + 28%), calc(var(--you-l) + 14%)) 100%) !important;
-          color: HighlightText !important;
-         border-color: accentcolor !important;
-		 box-shadow: inset 1px 1px 5px hsl(var(--you-h), calc(var(--you-s) + 4%), calc(var(--you-l) + 22%)), inset -1px -1px 5px hsl(var(--you-h), calc(var(--you-s) + 4%), calc(var(--you-l) + 22%)) !important;
-         border-radius: 4px;
-        }
+
+		tooltip {
+ 			 @media (-moz-platform: windows) {
+    			@media not (prefers-contrast) {
+		  			background-color: accentcolor !important;
+          			background-image: linear-gradient(
+						90deg,
+						hsl(calc(var(--you-h) - 3), calc(var(--you-s) + 28%), calc(var(--you-l) + 14%)) 0%,
+						hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 2%), calc(var(--you-l) + 2%)) 50%,
+						hsl(calc(var(--you-h) - 3), calc(var(--you-s) + 28%), calc(var(--you-l) + 14%)) 100%
+						) !important;
+          			color: HighlightText !important;
+         			border-color: accentcolor !important;
+		 			box-shadow: inset 1px 1px 5px hsl(var(--you-h), calc(var(--you-s) + 4%), calc(var(--you-l) + 22%)), inset -1px -1px 5px hsl(var(--you-h), calc(var(--you-s) + 4%), calc(var(--you-l) + 22%)) !important;
+         			border-radius: 4px;
+      			}
+    		}
+		}
+
+	#sidebar {
+      		border-radius: 0px !important;
+      		box-shadow: none !important;
+      		outline: unset !important;
+      		background-color: transparent !important;
+      		color: var(--sidebar-text-color);
+    	}
 		 
 	`;
 	
@@ -299,7 +314,7 @@
 	custom_scrollbar_arrows_code=`
 		scrollbar scrollbarbutton {
 		  background-repeat: no-repeat !important;
-		  background-position: center center !important;
+		  background-position: 0px 0px !important;
 		}
 		scrollbar[orient="vertical"] scrollbarbutton[type="decrement"] {
 		   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAHISURBVHgBfVO7ihRREK26t/9NUPEPDETUxEANVnwlBgYKImJooIILrm4kgqCRGvgFghj4ZpdZeqZne6Z7+nWPp7pnmJ5xdwuKqlv31qnqqtNaVA0i5+CcmCgVcytr/n/nqGlCmxQxpmq6AtBP7IPPk4P5gVGrDvXqDqomvdiycgiAVWwaMKh8GNRp18X643VxNZPYutZEaVofQlcAyIXbTw7L67oZjDLE4xmStECalchmVbAhXrzzDCYLSwlzXfiQnXiKvVGO4f4sJJMO4PLd57DPqdhWUda4cm8TvcRl8t+9CVqAJA/xOMfG/RdsP2BWVJjmBbK8bPXqg62VRLPyczfFn0GK3TgL1x++QlnVGKc54mS6okPqrUfbKwD6Y2c/cLr6ePu9XDt7UpI0l7Ksl8vsT5dzf/r6o9w8f6pbw7ffCTbffJAb507IIJ4IByZHia3x5bvPsnHmOPTrr1Hw5ObW20/dZm3bc5ppz+/HL50+1t1/+T6EZz+OGnknxvHO8szD4s57bX3vHf+FlkQaGR8koAWvSTDjeE26enH0uA7eICxZpnxT0xAf9mMQjhF7oEEaSzGm0zSkqvm+rUTi85LA6mHtO/kHsQhld0A5bC4AAAAASUVORK5CYII=") !important;
@@ -396,6 +411,7 @@
 		  width: 14px !important;
 		}
 	`;
+
 
   Components.classes["@mozilla.org/content/style-sheet-service;1"]
     .getService(Components.interfaces.nsIStyleSheetService)

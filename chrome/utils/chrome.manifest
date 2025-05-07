@@ -1,4 +1,5 @@
 content userchromejs	./
+resource userchromejs ../
 content userscripts		../JS/ contentaccessible=yes
 content modules			../JS/modules/
 
