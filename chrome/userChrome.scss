@@ -810,6 +810,7 @@ animation-name: rotate;
 #sidebar-button {
   list-style-image: url("resource/svg/exp.svg") !important;
   width: 115px !important;
+  height: 28px !important;
 }
 
 .sidebar-panel-header, #sidebar-panel-header {
@@ -818,7 +819,7 @@ animation-name: rotate;
 
 #sidebar-button .toolbarbutton-text::before {
   content: 'Show sidebar';
-  margin-top: -1px !important;
+  margin-top: -3px !important;
 }
 
 .urlbarView-button {
@@ -828,6 +829,7 @@ animation-name: rotate;
 
 body:has(#sidebar-main:not([hidden="true"])) #sidebar-button .toolbarbutton-text::before {
   content: 'Hide sidebar';
+  margin-top: 0px !important;
 }
 body:has(#sidebar-main:not([hidden="true"])) #sidebar-button {
 list-style-image: url("resource/svg/col.svg") !important;

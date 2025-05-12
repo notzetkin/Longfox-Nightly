@@ -784,6 +784,7 @@ toolbar .toolbarbutton-1 {
 #sidebar-button {
   list-style-image: url("resource/svg/exp.svg") !important;
   width: 115px !important;
+  height: 28px !important;
 }
 
 .sidebar-panel-header, #sidebar-panel-header {
@@ -792,7 +793,7 @@ toolbar .toolbarbutton-1 {
 
 #sidebar-button .toolbarbutton-text::before {
   content: "Show sidebar";
-  margin-top: -1px !important;
+  margin-top: -3px !important;
 }
 
 .urlbarView-button {
@@ -802,6 +803,7 @@ toolbar .toolbarbutton-1 {
 
 body:has(#sidebar-main:not([hidden=true])) #sidebar-button .toolbarbutton-text::before {
   content: "Hide sidebar";
+  margin-top: 0px !important;
 }
 
 body:has(#sidebar-main:not([hidden=true])) #sidebar-button {
