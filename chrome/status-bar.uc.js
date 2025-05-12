@@ -94,7 +94,8 @@ UC.statusBar = {
     win.statusbar.textNode = _uc.createElement(document, 'toolbaritem', {
       id: 'status-text',
       flex: '1',
-      width: '100'
+      width: '100',
+      label: 'Done'
     });
     if (this.textInBar)
       win.statusbar.textNode.appendChild(StatusPanel._labelElement);
