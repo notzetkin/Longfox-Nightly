@@ -307,6 +307,10 @@
       		background-color: transparent !important;
       		color: var(--sidebar-text-color);
     	}
+
+	.button-background {
+		  min-height: 16px !important;
+		}
 		 
 	`;
 	
