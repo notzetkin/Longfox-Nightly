@@ -13,4 +13,4 @@ on windows 10: transparency breaks after minimizing the window maximizing/restor
 
 ![MrOtherGuy](https://github.com/MrOtherGuy) for ![js loader](https://github.com/MrOtherGuy/fx-autoconfig)
 
-Licenses for files forked off Firefox and Chromium can be found in the files their code resides in.**
+Licenses for files forked off Firefox and Chromium can be found in the files their code resides in.
