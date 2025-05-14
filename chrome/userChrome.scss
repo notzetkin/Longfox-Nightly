@@ -1122,14 +1122,20 @@ background-image: linear-gradient(180deg, rgba(255,255,255,0) 0%, hsl(calc(var(-
 }
 
 #sidebar-box[sidebar-positionend=""]  {
-  margin-top: 150px !important;
+  margin-top: -14px !important;
   margin-right: -218px !important;
   margin-left: 0px !important;
-  background-color: transparent !important;
+  background-color: #fff !important;
   padding-bottom: 0px !important;
   max-width: -moz-fit-content !important;
   max-width: fit-content !important;
   padding-right: 0px !important;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, hsl(calc(var(--you-h) + 7), calc(var(--you-s) - 36%), calc(var(--you-l) + 41%)) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 100%) !important;
+}
+
+body:has(#sidebar-main[sidebar-positionend=""]:not([hidden="true"])) #TabsToolbar .toolbar-items {
+  margin-left: 10px !important;
+  margin-right: 15px !important;
 }
 
 .bottom-actions {
