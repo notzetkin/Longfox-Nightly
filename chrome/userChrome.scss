@@ -2302,8 +2302,13 @@ menupopup {
   }
 }
 
-.menu-icon{
+menu:not(.menu-iconic) .menu-icon, menuitem:not(.menuitem-iconic) .menu-icon{
   width: auto !important;
+  margin-inline-end: 0px !important;
+}
+
+menu:is(.menu-iconic) .menu-icon, menuitem:is(.menuitem-iconic) .menu-icon {
+  margin-inline-end: 8px !important;
 }
 
 #bookmarks-menu-button:is([open]) {
@@ -2404,14 +2409,6 @@ menuitem:is([type="checkbox"], [checked="true"], [type="radio"]) > .menu-iconic-
   display: unset !important; 
 }
 
-/*menuitem:is([type="checkbox"], [checked="true"], [type="radio"]) {
-	margin-left: -18px !important;
-}
-
-menuitem:is([type="checkbox"], [type="radio"] [checked="true"]) > .menu-iconic-left{
-  margin-left: -6px !important;
-}*/
-
 menuitem[checked="true"] > .menu-iconic-left {
   margin-inline-end: 8px !important;
 }
@@ -2455,9 +2452,10 @@ menuitem:is([type="checkbox"], [checked="true"], [type="radio"]) .menu-iconic-ic
       fill-opacity: var(--menu-icon-opacity);
       list-style-image: url("resource/svg/check.svg") !important;
       mix-blend-mode: luminosity !important;
-      margin-inline-start: 2px !important;
+      margin-inline-start: -2px !important;
       width: auto !important;
-  height: auto !important;
+      height: auto !important;
+      margin-inline-end: 4px !important;
     }
   }
 }
