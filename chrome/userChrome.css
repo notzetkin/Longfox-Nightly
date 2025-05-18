@@ -8,7 +8,7 @@
   --autocomplete-popup-separator-color: transparent !important;
   --bookmark-block-padding: 4px !important;
   --toolbarbutton-hover-background: transparent !important;
-  --urlbarView-small-font-size: 8pt !important;
+  --urlbarView-small-font-size: 9pt !important;
   --you-h: var(--accent-h);
   --you-s: var(--accent-s);
   --you-l: var(--accent-l);
@@ -115,6 +115,10 @@ toolbar .toolbarbutton-1:not([disabled]):is([open], [checked]) > :is(.toolbarbut
   padding: 6px !important;
 }
 
+#main-window {
+  font-family: "Segoe UI" !important;
+}
+
 #main-window[windowtype="navigator:browser"] {
   background-color: transparent !important;
 }
@@ -170,7 +174,7 @@ toolbar {
   position: absolute;
   width: 100%;
   height: inherit;
-  font-size: 8pt;
+  font-size: 9pt;
   margin-top: 2px;
 }
 
@@ -181,14 +185,20 @@ toolbar {
 }
 
 #menubar-items {
-  margin-left: 10px !important;
+  margin-inline: 10px !important;
+  width: 212px !important;
 }
 
 #history-menu, #bookmarksMenu {
-  visibility: 2;
-  width: 0;
+  visibility: collapse !important;
+  width: 0 !important;
   border: 0 !important;
   padding: 0 !important;
+  margin: 0 !important;
+}
+
+#history-menu .menubar-text, #bookmarksMenu .menubar-text {
+  margin: 0px !important;
 }
 
 .urlbar-input-container {
@@ -215,7 +225,7 @@ toolbar {
 .urlbar-input-container {
   min-height: 20px !important;
   padding: 0px !important;
-  font-size: 8pt !important;
+  font-size: 9pt !important;
   outline: 0px !important;
 }
 
@@ -227,7 +237,7 @@ toolbar {
   min-height: 20px !important;
   margin-right: 30px !important;
   padding: 1px !important;
-  font-size: 8pt !important;
+  font-size: 9pt !important;
   right: 27px !important;
 }
 
@@ -782,7 +792,7 @@ toolbar .toolbarbutton-1 {
 
 #sidebar-button {
   list-style-image: url("resource/svg/exp.svg") !important;
-  width: 115px !important;
+  width: 125px !important;
   height: 28px !important;
 }
 
@@ -899,7 +909,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
 
 #nav-bar .toolbarbutton-1 > .toolbarbutton-text, .bookmark-item > .toolbarbutton-text {
   padding-top: 0px !important;
-  min-height: 8pt !important;
+  min-height: 9pt !important;
   opacity: 0.7 !important;
   text-shadow: 2px 1px 5px rgba(0, 0, 0, 0.6) !important;
   width: 70px !important;
@@ -908,7 +918,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
 
 #additional_top_toolbar2 .toolbarbutton-1 > .toolbarbutton-text {
   padding: 4px !important;
-  min-height: 8pt !important;
+  min-height: 9pt !important;
   color: #fff !important;
   opacity: 1 !important;
   text-shadow: -2px 2px 5px rgba(0, 51, 160, 0.6) !important;
@@ -916,7 +926,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
 
 #TabsToolbar-customization-target .toolbarbutton-1 > .toolbarbutton-text {
   padding: 4px !important;
-  min-height: 8pt !important;
+  min-height: 9pt !important;
   color: #2b5e8f !important;
   opacity: 1 !important;
   text-shadow: unset !important;
@@ -1046,10 +1056,6 @@ body:has(#statuspanel-label[value=""]) #status-text::before {
   width: 100%;
   text-align: center;
   margin-bottom: 3px;
-}
-
-body:has(#statuspanel-label:not([value=""])) #status-text::before {
-  content: "" !important;
 }
 
 #browser {
@@ -1210,18 +1216,18 @@ button {
 
 .tab-audio-button {
   padding: 0px !important;
-  height: 16px !important;
-  margin-top: -7px !important;
+  height: inherit !important;
 }
 
 .tabbrowser-tab:not([selected=true]) .tab-audio-button {
-  margin-top: -8px !important;
+  margin-top: -2px !important;
 }
 
 .button-background[type~=icon]:not(.labelled), .button-background:not(.labelled):has(img) {
-  width: 16px !important;
-  height: 16px !important;
+  width: 18px !important;
+  height: 18px !important;
   padding: 0px !important;
+  border: none !important;
 }
 
 toolbar .toolbarbutton-1 > .toolbarbutton-icon, toolbar .toolbarbutton-1 > .toolbarbutton-text, toolbar .toolbarbutton-1 > .toolbarbutton-badge-stack {
@@ -1303,6 +1309,7 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewTabsSi
   background-position: 10px 0px;
   cursor: pointer;
   visibility: visible !important;
+  height: 18px;
 }
 
 moz-button[data-l10n-id=sidebar-panel-header-close-button][view=viewTabsSidebar]::before {
@@ -1341,6 +1348,7 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewHistor
   background-position: 10px 0px;
   cursor: pointer;
   visibility: visible !important;
+  height: 18px;
 }
 
 moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewHistorySidebar]:hover::before {
@@ -1383,6 +1391,7 @@ moz-button[view=viewBookmarksSidebar]::before {
   background-position: 10px 0px;
   cursor: pointer;
   visibility: visible !important;
+  height: 18px;
 }
 
 #sidebar-panel-close {
@@ -1433,6 +1442,7 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewCustom
   background-position: 10px 0px;
   cursor: pointer;
   visibility: visible !important;
+  height: 18px;
 }
 
 moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewCustomizeSidebar]:hover::before {
@@ -1479,10 +1489,12 @@ moz-button[data-l10n-id=sidebar-panel-header-close-button][view=viewCustomizeSid
 #main-menubar {
   margin-top: auto !important;
   margin-bottom: auto !important;
+  width: -moz-available !important;
 }
 
-#main-menubar > menu {
+#main-menubar > menu:not([hidden=true], #history-menu, #bookmarksMenu) {
   color: hsl(calc(var(--you-h) - 1), calc(var(--you-s) + 7%), calc(var(--you-l) + 12%)) !important;
+  margin-inline: auto !important;
 }
 
 #titlebar spacer {
@@ -1620,23 +1632,18 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
 }
 
 .urlbarView-no-wrap {
-  margin-top: 2px !important;
-}
-
-.urlbarView-row[row-selectable]:hover .urlbarView-no-wrap, .urlbarView-row[selected] .urlbarView-no-wrap {
-  margin-top: 0px !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
 .urlbarView-row[rich-suggestion] > .urlbarView-row-inner > .urlbarView-favicon {
   width: 16px !important;
   height: 16px !important;
-  margin-top: -3px !important;
 }
 
 .urlbarView-row[rich-suggestion] .urlbarView-row-body {
   display: flex !important;
   flex-direction: row !important;
-  margin-top: -4px !important;
 }
 
 .urlbarView-row[rich-suggestion] .urlbarView-action {
@@ -1645,10 +1652,16 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
 
 .urlbarView-row[rich-suggestion]:not([selected]) > .urlbarView-row-inner > .urlbarView-row-body > :is(.urlbarView-row-body-description, .urlbarView-row-body-bottom) {
   color: var(--default-titlebar-color) !important;
+  margin-block: auto !important;
 }
 
 .urlbarView-row:not([selected]) .urlbarView-url {
   color: var(--default-titlebar-color) !important;
+}
+
+.urlbarView-url {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
 .urlbarView-row[selected] {
@@ -1671,20 +1684,20 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
 
 .urlbarView-row[row-selectable] .urlbarView-favicon {
   padding-left: 4px !important;
-  margin-top: 1px !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
 .urlbarView-row[row-selectable]:hover .urlbarView-favicon, .urlbarView-row[row-selectable][selected] .urlbarView-favicon {
   margin-left: 4px !important;
   margin-right: 14px !important;
-  margin-top: 0px !important;
   transform: skew(6deg) rotate(-5deg) !important;
   opacity: 0.7 !important;
 }
 
 .urlbarView-row[row-selectable]:hover .urlbarView-row-inner, .urlbarView-row[row-selectable][selected] .urlbarView-row-inner {
   background-image: url("resource/png/cube.png") !important;
-  background-position: 8px 0px !important;
+  background-position: 8px -1px !important;
   background-repeat: no-repeat !important;
   background-size: 24px 24px !important;
 }
@@ -1711,12 +1724,10 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
 .urlbarView-row[row-selectable][rich-suggestion]:hover .urlbarView-favicon, .urlbarView-row[row-selectable][rich-suggestion][selected] .urlbarView-favicon {
   margin-left: -2px !important;
   margin-right: 8px !important;
-  margin-top: -1px !important;
 }
 
 .urlbarView-row[row-selectable][rich-suggestion]:hover .urlbarView-row-body-description, .urlbarView-row[row-selectable][rich-suggestion][selected] .urlbarView-row-body-description {
   font-size: 10pt !important;
-  margin-top: 1px !important;
 }
 
 .urlbarView-row[label] {
@@ -1781,8 +1792,9 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
 }
 
 .urlbarView-row-inner {
-  padding-block: 2px !important;
-  margin-top: 1px !important;
+  padding-block: 0px !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
   margin-left: 3px !important;
 }
 
@@ -1864,6 +1876,7 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
   text-align: center !important;
   width: 100% !important;
   padding-inline: 150px !important;
+  margin-bottom: 0px !important;
 }
 
 #statuspanel-label::before {
@@ -2366,7 +2379,8 @@ menuitem:is([type=checkbox], [type=radio]) {
   -webkit-appearance: unset !important;
      -moz-appearance: unset !important;
           appearance: unset !important;
-  width: 16px !important;
+  width: -moz-fit-content !important;
+  width: fit-content !important;
 }
 
 menuitem:is([type=checkbox], [type=radio]):not([checked=true]) {
@@ -2452,13 +2466,21 @@ menuseparator {
 }
 
 .menu-iconic .menu-iconic-text, .menuitem-iconic .menu-iconic-text {
-  margin-inline-start: 10px !important;
+  margin-inline-start: 7px !important;
   padding: 0px !important;
   padding-right: 2px !important;
 }
 
 .toolbar-menupopup :is(.menu-iconic, .menuitem-iconic) > .menu-iconic-left {
   margin-inline-end: 0px !important;
+}
+
+menuitem[type=checkbox][checked=true] .menu-icon {
+  margin-inline-end: 10px !important;
+}
+
+.menu-right {
+  list-style-image: url("resource/svg/menarrow.svg") !important;
 }
 
 .menu-iconic > .menu-iconic-left, .menuitem-iconic > .menu-iconic-left {
