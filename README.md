@@ -9,8 +9,6 @@ on windows 10: transparency breaks after minimizing the window maximizing/restor
 
 ![Aris](https://github.com/Aris-t2) for ![firefox customisation scripts](https://github.com/Aris-t2/CustomJSforFx)
 
-![xiaoxiaoflood](https://github.com/xiaoxiaoflood) for status bar restoration script from ![this set](https://github.com/xiaoxiaoflood/firefox-scripts)
-
 ![MrOtherGuy](https://github.com/MrOtherGuy) for ![js loader](https://github.com/MrOtherGuy/fx-autoconfig)
 
 Licenses for files forked off Firefox and Chromium can be found in the files their code resides in.
