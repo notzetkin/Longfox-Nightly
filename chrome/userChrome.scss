@@ -1184,10 +1184,17 @@ border-left: 1px solid !important;
 
 :root[inFullscreen] body:has(#sidebar-main:not([hidden="true"])) #tabbrowser-tabbox {
 margin-top: 0px !important;
+border: 0px !important;
+}
+
+:root[inFullscreen] body:has(#sidebar-main:not([hidden="true"])) #sidebar-main {
+  border-right: 1px solid !important;
+  border-image: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 21%), calc(var(--you-l) - 6%)) 100%) 1 !important;
+  margin-top: 0px !important;
 }
 
 :root[inFullscreen] body:has(#sidebar-main:not([hidden="true"])) #TabsToolbar .toolbar-items {
-  margin-left: 1px !important;
+  margin-left: 0px !important;
   margin-right: 1px !important;
 }
 
