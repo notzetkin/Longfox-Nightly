@@ -80,6 +80,10 @@
   margin-inline: 0px !important;
 }
 
+panel toolbarseparator {
+  padding: 0 !important;
+}
+
 @media (-moz-platform: windows-win7) and (not (-moz-windows-classic)) and (-moz-windows-compositor), (-moz-platform: windows-win8) and (not (-moz-windows-classic)) and (-moz-windows-compositor) {
   :root[sizemode=maximized] .titlebar-buttonbox {
     -webkit-appearance: unset !important;
@@ -144,6 +148,15 @@ toolbar {
   width: auto !important;
   padding-top: 3px !important;
   padding-bottom: 3px !important;
+  max-height: 20px !important;
+}
+
+panel, menupopup {
+  text-shadow: 2px 1px 5px rgba(0, 0, 0, 0.4) !important;
+}
+
+#context-back, #context-forward, #context-reload, #context-stop, #context-bookmarkpage {
+  --menuitem-icon: none !important;
 }
 
 #context-navigation > .menuitem-iconic > .menu-iconic-left {
@@ -185,8 +198,8 @@ toolbar {
 }
 
 #menubar-items {
-  margin-inline: 10px !important;
-  width: 212px !important;
+  margin-inline: 5px !important;
+  width: 165px !important;
 }
 
 #history-menu, #bookmarksMenu {
@@ -214,8 +227,8 @@ toolbar {
 #urlbar-container {
   order: 2 !important;
   align-items: center;
-  min-height: 20px !important;
-  height: 20px !important;
+  min-height: 16px !important;
+  height: 16px !important;
   margin-top: auto !important;
   margin-bottom: auto !important;
   padding: 0px !important;
@@ -223,18 +236,14 @@ toolbar {
 
 #urlbar,
 .urlbar-input-container {
-  min-height: 20px !important;
+  min-height: 16px !important;
   padding: 0px !important;
   font-size: 9pt !important;
   outline: 0px !important;
 }
 
-#urlbar {
-  margin-top: -1px !important;
-}
-
 #urlbar[breakout-extend] {
-  min-height: 20px !important;
+  min-height: 16px !important;
   margin-right: 30px !important;
   padding: 1px !important;
   font-size: 9pt !important;
@@ -247,26 +256,28 @@ toolbar {
 }
 
 #urlbar[breakout][breakout-extend] .urlbar-input-container {
-  height: 18px !important;
+  height: 16px !important;
   padding-block: 0px !important;
   padding-inline: 15px 0px !important;
   border: 0px !important;
-  margin-top: -1px !important;
+  margin-top: 0px !important;
   margin-left: -1px !important;
   margin-right: -2px !important;
 }
 
 #urlbar:not([breakout-extend]) {
-  height: 20px !important;
+  height: 16px !important;
 }
 
 #favimginurlbar {
-  margin: 1px !important;
+  margin: 0px !important;
+  margin-inline: 1px !important;
 }
 
 #nav-bar {
-  height: 51px !important;
+  height: 55px !important;
   padding-left: 5px !important;
+  padding-top: 2px !important;
 }
 
 #urlbar-go-button, .search-go-button {
@@ -287,7 +298,7 @@ toolbar {
   background-position: center !important;
   margin-left: 0px !important;
   margin-right: 0px !important;
-  height: 34px !important;
+  height: 27px !important;
   padding-right: 7px !important;
   box-shadow: 0px -2px 2px rgba(255, 255, 255, 0.2) !important;
   z-index: 3 !important;
@@ -328,18 +339,19 @@ toolbar {
   margin-right: -1px !important;
   margin-left: -1px !important;
   order: 7 !important;
+  min-height: 27px !important;
 }
 
 #TabsToolbar .toolbar-items {
   box-shadow: inset 0 -1px hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 21%), calc(var(--you-l) - 6%)) !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #TabsToolbar .toolbar-items {
-  margin-left: 10px !important;
+body:has(#sidebar-main:not([hidden])) #TabsToolbar .toolbar-items {
+  margin-left: 7px !important;
   margin-right: 10px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabs {
+body:has(#sidebar-main:not([hidden])) #tabbrowser-tabs {
   margin-left: -2px !important;
   margin-right: -10px !important;
 }
@@ -424,8 +436,7 @@ toolbar .toolbarbutton-1:not([disabled]):hover > :is(.toolbarbutton-icon, .toolb
   content: "";
   width: 20px;
   height: 20px;
-  -webkit-clip-path: path("M6.49996 4C5.89972 3.05676 4.50006 0 1.00006 0H5.6088e-05L0 19H20.0001C13.5001 15 9.5391 8.77579 6.49996 4Z") !important;
-          clip-path: path("M6.49996 4C5.89972 3.05676 4.50006 0 1.00006 0H5.6088e-05L0 19H20.0001C13.5001 15 9.5391 8.77579 6.49996 4Z") !important;
+  clip-path: path("M6.49996 4C5.89972 3.05676 4.50006 0 1.00006 0H5.6088e-05L0 19H20.0001C13.5001 15 9.5391 8.77579 6.49996 4Z") !important;
   background-color: hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 21%), calc(var(--you-l) - 6%)) !important;
   position: absolute !important;
   right: 0px !important;
@@ -436,8 +447,7 @@ toolbar .toolbarbutton-1:not([disabled]):hover > :is(.toolbarbutton-icon, .toolb
   content: "";
   width: 20px;
   height: 20px;
-  -webkit-clip-path: path("M6.49992 6C5.89968 5.05676 4.50002 2 1.00002 2H1.5974e-05L0 20H19.1887C13.3322 15.5516 9.53906 10.7758 6.49992 6Z") !important;
-          clip-path: path("M6.49992 6C5.89968 5.05676 4.50002 2 1.00002 2H1.5974e-05L0 20H19.1887C13.3322 15.5516 9.53906 10.7758 6.49992 6Z") !important;
+  clip-path: path("M6.49992 6C5.89968 5.05676 4.50002 2 1.00002 2H1.5974e-05L0 20H19.1887C13.3322 15.5516 9.53906 10.7758 6.49992 6Z") !important;
   background-color: hsl(calc(var(--you-h) - 2), calc(var(--you-s) - 13%), calc(var(--you-l) + 20%)) !important;
   position: absolute !important;
   right: 0px !important;
@@ -448,8 +458,7 @@ toolbar .toolbarbutton-1:not([disabled]):hover > :is(.toolbarbutton-icon, .toolb
   content: "";
   width: 20px;
   height: 19px;
-  -webkit-clip-path: path("M5.5 3C4.89976 2.05676 4 0 1 0H0V18H18C11 12.5 8.53914 7.77579 5.5 3Z") !important;
-          clip-path: path("M5.5 3C4.89976 2.05676 4 0 1 0H0V18H18C11 12.5 8.53914 7.77579 5.5 3Z") !important;
+  clip-path: path("M5.5 3C4.89976 2.05676 4 0 1 0H0V18H18C11 12.5 8.53914 7.77579 5.5 3Z") !important;
   background-color: aliceblue !important;
   position: absolute !important;
   right: 0px !important;
@@ -466,8 +475,7 @@ toolbar .toolbarbutton-1:not([disabled]):hover > :is(.toolbarbutton-icon, .toolb
   content: "";
   width: 20px;
   height: 19px;
-  -webkit-clip-path: path("M5.5 5C4.89976 4.05676 4 2 1 2H0V19H18.1888C12.3323 14.5516 8.53914 9.77579 5.5 5Z") !important;
-          clip-path: path("M5.5 5C4.89976 4.05676 4 2 1 2H0V19H18.1888C12.3323 14.5516 8.53914 9.77579 5.5 5Z") !important;
+  clip-path: path("M5.5 5C4.89976 4.05676 4 2 1 2H0V19H18.1888C12.3323 14.5516 8.53914 9.77579 5.5 5Z") !important;
   background-color: aliceblue !important;
   position: absolute !important;
   right: 0px !important;
@@ -562,13 +570,26 @@ toolbar .toolbarbutton-1:not([disabled]):hover > :is(.toolbarbutton-icon, .toolb
   height: inherit !important;
 }
 
-#urlbar-background {
+#urlbar-background, .urlbar-background {
   background-color: rgb(227, 237, 247) !important;
   background: linear-gradient(90deg, hsl(calc(var(--you-h) - 2), calc(var(--you-s) - 5%), calc(var(--you-l) + 36%)) 0%, hsl(calc(var(--you-h) - 2), calc(var(--you-s) - 5%), calc(var(--you-l) + 36%)) 60%, hsl(var(--you-h), calc(var(--you-s) - 15%), calc(var(--you-l) + 22%)) 100%);
   border: 1px solid hsl(var(--you-h), calc(var(--you-s) - 10%), calc(var(--you-l) - 11%)) !important;
   box-shadow: 0px 1px hsl(calc(var(--you-h) - 2), calc(var(--you-s) + 13%), calc(var(--you-l) + 16%)), 0px -1px hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 10%), calc(var(--you-l) - 25%)) !important;
-  min-height: 19px !important;
+  min-height: 16px !important;
   border-radius: 12px !important;
+}
+
+.urlbar-input-box {
+  align-items: end !important;
+}
+
+#page-action-buttons {
+  align-self: baseline !important;
+}
+
+#urlbar image {
+  width: 14px !important;
+  height: 14px !important;
 }
 
 #back-button > .toolbarbutton-icon,
@@ -589,7 +610,7 @@ toolbar .toolbarbutton-1:not([disabled]):hover > :is(.toolbarbutton-icon, .toolb
   background-repeat: no-repeat;
   height: 100%;
   width: 60px;
-  top: 5px;
+  top: 7px;
   left: 11px;
   z-index: 0;
 }
@@ -748,7 +769,7 @@ toolbar .toolbarbutton-1 {
   box-shadow: 0px 1px 0px hsl(var(--you-h), calc(var(--you-s) + 10%), calc(var(--you-l) + 7%)), 0px -1px 0px hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 10%), calc(var(--you-l) - 19%)) !important;
   background-color: hsl(var(--you-h), calc(var(--you-s) + 1%), calc(var(--you-l) + 2%)) !important;
   border-radius: 50% !important;
-  margin-top: 6px !important;
+  margin-block: auto !important;
   margin-inline: 2px !important;
 }
 
@@ -773,7 +794,7 @@ toolbar .toolbarbutton-1 {
   box-shadow: 0px 1px 0px hsl(var(--you-h), calc(var(--you-s) + 10%), calc(var(--you-l) + 7%)), 0px -1px 0px hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 10%), calc(var(--you-l) - 19%)) !important;
   background-color: hsl(var(--you-h), calc(var(--you-s) + 1%), calc(var(--you-l) + 2%)) !important;
   border-radius: 50% !important;
-  margin-top: 6px !important;
+  margin-block: auto !important;
   margin-inline: 2px !important;
 }
 
@@ -786,14 +807,19 @@ toolbar .toolbarbutton-1 {
   box-shadow: 0px 1px 0px hsl(var(--you-h), calc(var(--you-s) + 10%), calc(var(--you-l) + 7%)), 0px -1px 0px hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 10%), calc(var(--you-l) - 19%)) !important;
   background-color: hsl(var(--you-h), calc(var(--you-s) + 1%), calc(var(--you-l) + 2%)) !important;
   border-radius: 50% !important;
-  margin-top: 6px !important;
+  margin-block: auto !important;
   margin-inline: 2px !important;
 }
 
 #sidebar-button {
   list-style-image: url("resource/svg/exp.svg") !important;
-  width: 125px !important;
+  width: 120px !important;
   height: 28px !important;
+}
+
+#sidebar-button .toolbarbutton-icon {
+  margin-inline-start: 7px !important;
+  width: auto !important;
 }
 
 #sidebar-button .toolbarbutton-text::before {
@@ -806,12 +832,12 @@ toolbar .toolbarbutton-1 {
   min-height: 20px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #sidebar-button .toolbarbutton-text::before {
+body:has(#sidebar-main:not([hidden])) #sidebar-button .toolbarbutton-text::before {
   content: "Hide sidebar";
   margin-top: 0px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #sidebar-button {
+body:has(#sidebar-main:not([hidden])) #sidebar-button {
   list-style-image: url("resource/svg/col.svg") !important;
   margin-top: -1px !important;
 }
@@ -856,9 +882,9 @@ body:has(#sidebar-main:not([hidden=true])) #sidebar-button {
 #unified-extensions-button:is([open])::before {
   content: "";
   margin-top: 25px !important;
-  margin-left: 251px !important;
+  margin-left: 250px !important;
   height: 1px;
-  width: 151px !important;
+  width: 155px !important;
   background-color: hsl(calc(var(--you-h) - 1), calc(var(--you-s) + 24%), calc(var(--you-l) + 24%)) !important;
   position: absolute;
   z-index: 9999999;
@@ -933,7 +959,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
 }
 
 #additional_top_toolbar2 .toolbarbutton-1 {
-  padding: 8px !important;
+  padding: 5px !important;
 }
 
 #additional_top_toolbar2 .toolbarbutton-1 > .toolbarbutton-icon, #TabsToolbar-customization-target .toolbarbutton-1 > .toolbarbutton-icon {
@@ -947,7 +973,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
 }
 
 #browser-bottombox {
-  height: 16px !important;
+  height: 15px !important;
   background-color: hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) !important;
   background-image: linear-gradient(90deg, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 0%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 10%, hsl(var(--you-h), calc(var(--you-s) - 14%), calc(var(--you-l) + 21%)) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 90%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 100%);
   border-bottom-left-radius: 12px !important;
@@ -973,66 +999,8 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
   padding-left: 2px !important;
 }
 
-/*body:has(#sidebar-main:not([hidden="true"])) #statuspanel {
-  margin-bottom:-21px !important;
-  left: -232px !important;
-}
-
-body:has(#sidebar-main:not([hidden="true"])) #statuspanel[type=status] {
-	  margin-bottom:-24px !important;
-	  left:-51px !important;
-}
-
-
-#statuspanel {
-  background-color: hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) !important;
-  background-image: linear-gradient(90deg, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 0%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 10%, hsl(var(--you-h), calc(var(--you-s) - 14%), calc(var(--you-l) + 21%)) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 90%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 100%) !important;
-  background-repeat: no-repeat !important;
-  background-size: 80% 100% !important;
-  background-position: top !important;
-  visibility:  visible !important;
-  position: absolute;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  left: 0 !important;
-  right: 0 !important;
-  text-align: center !important;
-  height: 16px !important;
-  margin-bottom: -16px !important;
-  border-bottom-left-radius: 12px !important;
-  border-bottom-right-radius: 12px !important;
-}
-
-#statuspanel:not([hidden]) {
-  max-width: 100% !important;
-  pointer-events: none;
-  padding-top: 0 !important;
-}
-
-#statuspanel[sizelimit] {
-  max-width: 100% !important;
-}
-
-#statuspanel[type=status] {
-	position: absolute;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  left: 0 !important;
-  right: 0 !important;
-text-align: center !important;
-  width: 100% !important;
-  visibility: visible !important;
-}
-
-#statuspanel {
-  &[inactive], :root[inDOMFullscreen] &:not([type="overLink"]) {
-    transition: none;
-    opacity: 1 !important;
-    visibility: hidden;
-  }
-}*/
 #status-bar {
-  height: 16px !important;
+  height: 15px !important;
   background-image: linear-gradient(180deg, transparent 0%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 85%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 100%) !important;
   border-bottom-left-radius: 12px !important;
   border-bottom-right-radius: 12px !important;
@@ -1051,11 +1019,14 @@ text-align: center !important;
 body:has(#statuspanel-label[value=""]) #status-text::before {
   text-shadow: -1px -1px 5px rgba(0, 0, 0, 0.6) !important;
   color: #fff !important;
-  content: attr(label);
   position: absolute !important;
   width: 100%;
   text-align: center;
   margin-bottom: 3px;
+}
+
+#status-text {
+  margin-top: -1px !important;
 }
 
 #browser {
@@ -1078,13 +1049,14 @@ button:hover > .button-background[type~=ghost] {
 
 #sidebar-box {
   margin-top: -14px !important;
-  margin-left: -232px !important;
-  background-color: #fff !important;
+  margin-left: -175px !important;
+  background-color: rgb(255, 255, 255) !important;
   padding-bottom: 0px !important;
-  max-width: 232px !important;
+  max-width: 155px !important;
   padding-right: 0px !important;
-  padding-left: 5px !important;
+  padding-left: 0px !important;
   background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, hsl(calc(var(--you-h) + 7), calc(var(--you-s) - 36%), calc(var(--you-l) + 41%)) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 100%) !important;
+  min-width: 175px !important;
 }
 
 .sidebar-panel-header h4 {
@@ -1103,9 +1075,15 @@ button:hover > .button-background[type~=ghost] {
   background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, hsl(calc(var(--you-h) + 7), calc(var(--you-s) - 36%), calc(var(--you-l) + 41%)) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 17%), calc(var(--you-l) + 28%)) 100%) !important;
 }
 
-body:has(#sidebar-main[sidebar-positionend=""]:not([hidden=true])) #TabsToolbar .toolbar-items {
+body:has(#sidebar-main[sidebar-positionend=""]:not([hidden])) #TabsToolbar .toolbar-items {
   margin-left: 10px !important;
-  margin-right: 15px !important;
+  margin-right: 7px !important;
+}
+
+body:has(#sidebar-main[sidebar-positionend=""]:not([hidden])) #tabbrowser-tabbox {
+  margin-inline-start: 10px !important;
+  margin-inline-end: 2px !important;
+  margin-top: 0px !important;
 }
 
 .bottom-actions {
@@ -1138,7 +1116,7 @@ body:has(#sidebar-main[sidebar-positionend=""]:not([hidden=true])) #TabsToolbar 
   border-radius: 0px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabbox {
+body:has(#sidebar-main:not([hidden])) #tabbrowser-tabbox {
   border-left: 1px solid !important;
   border-right: 1px solid !important;
   border-bottom: 1px solid white !important;
@@ -1147,25 +1125,26 @@ body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabbox {
      border-image: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 21%), calc(var(--you-l) - 6%)) 100%) 1 !important;
 }
 
-:root[inFullscreen] body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabbox {
+:root[inFullscreen] body:has(#sidebar-main:not([hidden])) #tabbrowser-tabbox {
   margin-top: 0px !important;
   border: 0px !important;
 }
 
-:root[inFullscreen] body:has(#sidebar-main:not([hidden=true])) #sidebar-main {
+:root[inFullscreen] body:has(#sidebar-main:not([hidden])) #sidebar-main {
   border-right: 1px solid !important;
   -o-border-image: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 21%), calc(var(--you-l) - 6%)) 100%) 1 !important;
      border-image: linear-gradient(to top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 50%, hsl(calc(var(--you-h) - 1), calc(var(--you-s) - 21%), calc(var(--you-l) - 6%)) 100%) 1 !important;
   margin-top: 0px !important;
 }
 
-:root[inFullscreen] body:has(#sidebar-main:not([hidden=true])) #TabsToolbar .toolbar-items {
+:root[inFullscreen] body:has(#sidebar-main:not([hidden])) #TabsToolbar .toolbar-items {
   margin-left: 0px !important;
   margin-right: 1px !important;
 }
 
-:root:not([inFullscreen]) body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabbox {
-  margin-inline: 10px !important;
+:root:not([inFullscreen]) body:has(#sidebar-main:not([hidden], [sidebar-positionend=""])) #tabbrowser-tabbox {
+  margin-inline-start: 7px !important;
+  margin-inline-end: 10px !important;
   margin-bottom: 0px !important;
   padding-bottom: 6px !important;
   background-color: transparent !important;
@@ -1175,16 +1154,16 @@ body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabbox {
   margin-top: 0px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #TabsToolbar {
-  padding-left: 232px !important;
+body:has(#sidebar-main:not([hidden])) #TabsToolbar {
+  padding-left: 175px !important;
 }
 
-body:has(#sidebar-main[sidebar-positionend=""]:not([hidden=true])) #TabsToolbar {
+body:has(#sidebar-main[sidebar-positionend=""]:not([hidden])) #TabsToolbar {
   padding-left: 0px !important;
   padding-right: 232px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabpanels {
+body:has(#sidebar-main:not([hidden])) #tabbrowser-tabpanels {
   border: 0px solid transparent !important;
   border-bottom-left-radius: 12px !important;
   border-bottom-right-radius: 12px !important;
@@ -1197,11 +1176,11 @@ body:has(#sidebar-main:not([hidden=true])) #tabbrowser-tabpanels {
   box-shadow: 0px 1px 5px rgb(255, 255, 255) !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) .browserSidebarContainer {
+body:has(#sidebar-main:not([hidden])) .browserSidebarContainer {
   margin: 0px !important;
 }
 
-body:has(#sidebar-main:not([hidden=true])) browser {
+body:has(#sidebar-main:not([hidden])) browser {
   border-radius: 12px !important;
   border-top-left-radius: 12px;
   border-top-left-radius: 0px !important;
@@ -1209,7 +1188,7 @@ body:has(#sidebar-main:not([hidden=true])) browser {
 }
 
 #sidebar-main {
-  width: 232px !important;
+  width: 175px !important;
   margin-top: -12px !important;
 }
 
@@ -1318,6 +1297,7 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewTabsSi
   cursor: pointer;
   visibility: visible !important;
   height: 18px;
+  display: block;
 }
 
 moz-button[data-l10n-id=sidebar-panel-header-close-button][view=viewTabsSidebar]::before {
@@ -1341,7 +1321,8 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewTabsSi
 }
 
 moz-button[view=viewTabsSidebar] {
-  visibility: hidden;
+  visibility: hidden !important;
+  height: 34px !important;
 }
 
 moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewHistorySidebar]::before {
@@ -1364,7 +1345,7 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewHistor
 }
 
 moz-button[view=viewHistorySidebar] {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 
 moz-button[data-l10n-id=sidebar-panel-header-close-button][view=viewHistorySidebar]::before {
@@ -1403,7 +1384,7 @@ moz-button[view=viewBookmarksSidebar]::before {
 }
 
 #sidebar-panel-close {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 
 #sidebar-panel-close::before {
@@ -1435,7 +1416,7 @@ moz-button[view=viewBookmarksSidebar]:hover::before {
 }
 
 moz-button[view=viewBookmarksSidebar] {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 
 moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewCustomizeSidebar]::before {
@@ -1458,7 +1439,7 @@ moz-button:not([data-l10n-id=sidebar-panel-header-close-button])[view=viewCustom
 }
 
 moz-button[view=viewCustomizeSidebar] {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 
 moz-button[data-l10n-id=sidebar-panel-header-close-button][view=viewCustomizeSidebar]::before {
@@ -1483,7 +1464,7 @@ moz-button[data-l10n-id=sidebar-panel-header-close-button][view=viewCustomizeSid
 }
 
 #sidebar {
-  width: 218px !important;
+  width: 182px !important;
 }
 
 .sidebar-panel {
@@ -1596,10 +1577,6 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
   background-position: left !important;
   background-repeat: no-repeat !important;
   background-size: 5% !important;
-}
-
-#urlbar-input {
-  padding-bottom: 1px !important;
 }
 
 .toolbarbutton-combined-buttons-dropmarker {
@@ -1872,7 +1849,7 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
   text-shadow: -1px -1px 5px rgba(0, 0, 0, 0.6) !important;
   color: #fff !important;
   margin-bottom: 3px !important;
-  height: 16px !important;
+  height: 15px !important;
   background-color: transparent !important;
   border-bottom-left-radius: 12px !important;
   border-bottom-right-radius: 12px !important;
@@ -1884,7 +1861,7 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
   text-align: center !important;
   width: 100% !important;
   padding-inline: 150px !important;
-  margin-bottom: 0px !important;
+  margin-bottom: 1px !important;
 }
 
 #statuspanel-label::before {
@@ -1892,6 +1869,11 @@ toolbarpaletteitem[place=toolbar][id^=wrapper-customizableui-special-spring], to
   width: 100% !important;
   text-align: center !important;
   margin-inline: -150px !important;
+}
+
+#urlbar-zoom-button {
+  padding: 0px 7px !important;
+  margin-block: 0px !important;
 }
 
 #PlacesChevron .toolbarbutton-text {
@@ -1941,6 +1923,10 @@ toolbarseparator {
   margin-top: 6px !important;
   margin-bottom: 14px !important;
   opacity: 0.7 !important;
+  padding: 0 !important;
+}
+toolbarseparator::before {
+  border-inline-start: 0 !important;
 }
 
 #statuspanel[inactive][previoustype=overLink] {
@@ -1992,8 +1978,7 @@ findbar {
   padding: 0px !important;
   border-radius: var(--tab-border-radius);
   background-color: hsl(var(--you-h), var(--you-s), var(--you-l)) !important;
-  -webkit-clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%) !important;
-          clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%) !important;
+  clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%) !important;
   list-style-image: none !important;
   opacity: 80% !important;
   z-index: 2 !important;
@@ -2060,7 +2045,7 @@ panel {
 }
 
 #unified-extensions-panel {
-  margin-right: -223px !important;
+  margin-right: -226px !important;
   border-top: 0px !important;
   margin-top: 3px !important;
 }
@@ -2332,7 +2317,7 @@ menu:is(.menu-iconic) .menu-icon, menuitem:is(.menuitem-iconic) .menu-icon {
 }
 
 #bookmarks-menu-button #BMB_bookmarksPopup {
-  margin-top: 5px !important;
+  margin-top: 7px !important;
   margin-right: -6px !important;
   border-top: 0px !important;
   opacity: 0.92 !important;
@@ -2346,15 +2331,17 @@ menu:is(.menu-iconic) .menu-icon, menuitem:is(.menuitem-iconic) .menu-icon {
 }
 
 :root[sizemode=maximized] #bookmarks-menu-button #BMB_bookmarksPopup {
-  margin-right: 3px !important;
+  margin-top: 7px !important;
+  margin-right: 2px !important;
 }
 
 #bookmarks-menu-button:is([open])::before {
   content: "";
-  margin-top: 50px;
+  margin-top: 52px;
   height: 1px;
   width: 156px;
   background-color: hsl(calc(var(--you-h) - 1), calc(var(--you-s) + 24%), calc(var(--you-l) + 24%)) !important;
+  visibility: visible !important;
 }
 
 #bookmarks-menu-button::before {
@@ -2364,6 +2351,7 @@ menu:is(.menu-iconic) .menu-icon, menuitem:is(.menuitem-iconic) .menu-icon {
   background-color: transparent !important;
   position: absolute;
   margin-left: -228px;
+  visibility: hidden;
 }
 
 menuitem:is([type=checkbox], [type=radio]) {
@@ -2440,6 +2428,7 @@ menuitem:is([type=checkbox], [checked=true], [type=radio]) .menu-iconic-icon {
     fill: currentColor;
     fill-opacity: var(--menu-icon-opacity);
     list-style-image: url("resource/svg/check.svg") !important;
+    content: url("resource/svg/check.svg") !important;
     mix-blend-mode: luminosity !important;
     margin-inline-start: -2px !important;
     width: auto !important;

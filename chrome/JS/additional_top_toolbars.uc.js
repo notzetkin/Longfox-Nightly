@@ -9,7 +9,7 @@
 // creating an observer array always fails, so observers are created manually atm.
 
 
-ChromeUtils.importESModule("resource:///modules/CustomizableUI.sys.mjs");
+
 var appversion = parseInt(Services.appinfo.version);
 
 var AdditionalTopToolbars = {
@@ -20,7 +20,7 @@ var AdditionalTopToolbars = {
 	  if(gBrowser.selectedBrowser.getAttribute('blank')) gBrowser.selectedBrowser.removeAttribute('blank');
 	} catch(e) {}
 	  
-	var number_of_additional_top_toolbars = 2; // max 5 to save toolbar state on Fx 71+ (add additional code at the bottom for more)
+	var number_of_additional_top_toolbars = 3; // max 5 to save toolbar state on Fx 71+ (add additional code at the bottom for more)
 	var tb_label = "Address";
 
 	try {

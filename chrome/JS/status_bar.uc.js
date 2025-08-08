@@ -1,4 +1,4 @@
-ChromeUtils.importESModule("resource:///modules/CustomizableUI.sys.mjs");
+
 var appversion = parseInt(Services.appinfo.version);
 
 let status = document.createElement("vbox");
@@ -55,7 +55,6 @@ var AddStatus = {
 		 #status-bar {
             color: initial !important;
             background-color: var(--toolbar-non-lwt-bgcolor) !important;
-display: flex;
           }
           #status-text > #statuspanel-label {
             border-top: 0 !important;
@@ -73,7 +72,6 @@ display: flex;
           }
 	  #wrapper-status-text, #status-text {
 		width: 100% !important;
-                height: 16px;
 	  }
           toolbarpaletteitem #status-text:before {
             content: "Status text" !important;

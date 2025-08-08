@@ -1,9 +1,8 @@
 // 'Activity throbber' script for Firefox 60+ by Aris
 
 
-Components.utils.import("resource:///modules/CustomizableUI.jsm");
-ChromeUtils.importESModule("resource:///modules/CustomizableUI.sys.mjs");
-var sss = Components.classes["@mozilla.org/content/style-sheet-service;1"].getService(Components.interfaces.nsIStyleSheetService);
+
+var appversion = parseInt(Services.appinfo.version);
 
 var at_label = "Microsoft Internet Explorer";
 
@@ -37,6 +36,8 @@ var ActivityThrobber = {
 		onCreated: function(button) {
 		  return button;
 		}
+          
+          
 				
 	});
 	  

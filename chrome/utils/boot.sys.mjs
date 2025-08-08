@@ -1,13 +1,8 @@
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
-import { FileSystem as FS } from "chrome://userchromejs/content/fs.sys.mjs";
-import { xPref } from "chrome://userchromejs/content/xPref.mjs";
-import { _ucUtils as utils, loaderModuleLink, Pref } from "chrome://userchromejs/content/utils.sys.mjs";
+import { loaderModuleLink, Pref, FileSystem, windowUtils, showNotification, startupFinished, restartApplication, escapeXUL, toggleScript } from "chrome://userchromejs/content/utils.sys.mjs";
 
-const FX_AUTOCONFIG_VERSION = "0.8.6";
+const FX_AUTOCONFIG_VERSION = "0.10.7";
 console.warn( "Browser is executing custom scripts via autoconfig" );
-
-const SHARED_GLOBAL = {};
-Object.defineProperty(SHARED_GLOBAL,"widgetCallbacks",{value:new Map()});
 
 const APP_VARIANT = (() => {
   let is_tb = AppConstants.BROWSER_CHROME_URL.startsWith("chrome://messenger");
@@ -16,6 +11,7 @@ const APP_VARIANT = (() => {
     FIREFOX: !is_tb
   }
 })();
+const BRAND_NAME = AppConstants.MOZ_APP_DISPLAYNAME_DO_NOT_USE;
 
 const BROWSERCHROME = (() => {
   if(APP_VARIANT.FIREFOX){
@@ -26,16 +22,26 @@ const BROWSERCHROME = (() => {
 
 const PREF_ENABLED = 'userChromeJS.enabled';
 const PREF_SCRIPTSDISABLED = 'userChromeJS.scriptsDisabled';
-const PREF_GBROWSERHACKENABLED = 'userChromeJS.gBrowser_hack.enabled';
 
 function getDisabledScripts(){
   return Services.prefs.getStringPref(PREF_SCRIPTSDISABLED,"").split(",")
 }
 
+const MODULE_LOADER = new (function(){
+  let compiledScript = null;
+  let promise = ChromeUtils.compileScript("chrome://userchromejs/content/module_loader.mjs");
+  promise.then(s => { compiledScript = s });
+  
+  this.ready = () => {
+    if(compiledScript){
+      return Promise.resolve(compiledScript)
+    }
+    return promise
+  }
+  return this
+})();
+
 class ScriptData {
-  #preCompiledESM;
-  #preCompileFailed;
-  #preCompiling;
   #preLoadedStyle;
   #chromeURI;
   #isRunning = false;
@@ -55,7 +61,6 @@ class ScriptData {
     this.downloadURL = headerText.match(/\/\/ @downloadURL\s+(.+)\s*$/im)?.[1];
     this.updateURL = headerText.match(/\/\/ @updateURL\s+(.+)\s*$/im)?.[1];
     this.optionsURL = headerText.match(/\/\/ @optionsURL\s+(.+)\s*$/im)?.[1];
-    this.startup = headerText.match(/\/\/ @startup\s+(.+)\s*$/im)?.[1];
     this.id = headerText.match(/\/\/ @id\s+(.+)\s*$/im)?.[1]
            || `${leafName.split('.uc.js')[0]}@${this.author||'userChromeJS'}`;
     this.isESM = this.filename.endsWith(".mjs");
@@ -70,26 +75,27 @@ class ScriptData {
       : null;
     this.useFileURI = /\/\/ @usefileuri\b/.test(headerText);
     this.noExec = isStyle || noExec;
-    // Construct regular expression to use to match target document
-    let match, rex = {
-      include: [],
-      exclude: []
-    };
-    let findNextRe = /^\/\/ @(include|exclude)\s+(.+)\s*$/gm;
-    while (match = findNextRe.exec(headerText)) {
-      rex[match[1]].push(
-        match[2].replace(/^main$/i, BROWSERCHROME).replace(/\*/g, '.*?')
-      );
-    }
-    if (!rex.include.length) {
-      rex.include.push(BROWSERCHROME);
-    }
-    let exclude = rex.exclude.length ? `(?!${rex.exclude.join('$|')}$)` : '';
-    this.regex = new RegExp(`^${exclude}(${rex.include.join('|') || '.*'})$`,'i');
     
-    if(this.inbackground){
+    if(this.inbackground || this.styleSheetMode === "agent" || (!isStyle && noExec)){
+      this.regex = null;
       this.loadOrder = -1;
     }else{
+      // Construct regular expression to use to match target document
+      let match, rex = {
+        include: [],
+        exclude: []
+      };
+      let findNextRe = /^\/\/ @(include|exclude)\s+(.+)\s*$/gm;
+      while (match = findNextRe.exec(headerText)) {
+        rex[match[1]].push(
+          match[2].replace(/^main$/i, BROWSERCHROME).replace(/\*/g, '.*?')
+        );
+      }
+      if (!rex.include.length) {
+        rex.include.push(BROWSERCHROME);
+      }
+      let exclude = rex.exclude.length ? `(?!${rex.exclude.join('$|')}$)` : '';
+      this.regex = new RegExp(`^${exclude}(${rex.include.join('|') || '.*'})$`,'i');
       let loadOrder = headerText.match(/\/\/ @loadOrder\s+(\d+)\s*$/im)?.[1];
       this.loadOrder = Number.parseInt(loadOrder) || 10;
     }
@@ -105,6 +111,12 @@ class ScriptData {
   get isRunning(){
     return this.#isRunning
   }
+  setRunning(){
+    this.#isRunning = true
+  }
+  markScriptInjectionFailure(){
+    this.#injectionFailed = true
+  }
   get chromeURI(){
     if(!this.#chromeURI){
       this.#chromeURI = this.type === "style"
@@ -115,37 +127,11 @@ class ScriptData {
   }
   get referenceURI(){
     return this.useFileURI && this.type === "style"
-      ? FS.convertChromeURIToFileURI(this.chromeURI)
+      ? FileSystem.convertChromeURIToFileURI(this.chromeURI)
       : this.chromeURI
   }
   get preLoadedStyle(){
     return this.#preLoadedStyle
-  }
-  static preCompileMJS(aScript){
-    if(aScript.#preCompiledESM){
-      return Promise.resolve(aScript.#preCompiledESM)
-    }
-    if(aScript.#preCompileFailed){
-      return Promise.resolve(null);
-    }
-    if(aScript.#preCompiling){
-      return aScript.#preCompiling
-    }
-    aScript.#preCompiling = new Promise( resolve => {
-      ChromeUtils.compileScript(`data:,"use strict";import("${aScript.chromeURI.spec}").catch(console.error)`)
-      .then( script => {
-        aScript.#preCompiledESM = script;
-        resolve(script);
-      })
-      .catch( (ex) => resolve(ScriptData.onCompileRejection(ex,aScript.filename)) )
-      .finally(()=>{aScript.#preCompiling = null})
-    });
-    return aScript.#preCompiling
-  }
-  static onCompileRejection(ex,script){
-    script.#preCompileFailed = true;
-    console.error(`@ ${script.filename}: script couldn't be compiled because:`,ex);
-    return null
   }
   static preLoadAuthorStyle(aStyle){
     if(aStyle.#injectionFailed){
@@ -163,54 +149,21 @@ class ScriptData {
     aStyle.#isRunning = true;
     return true
   }
-  
-  static tryLoadScriptIntoWindow(aScript,win){
-    if(!aScript.regex.test(win.location.href)){
+  static tryLoadStyleIntoWindow(aStyle,win){
+    if(aStyle.styleSheetMode !== "author" || !aStyle.regex?.test(win.location.href)){
       return
     }
-    if(aScript.type === "style" && aScript.styleSheetMode === "author"){
-      if(!aScript.#preLoadedStyle){
-        let success = ScriptData.preLoadAuthorStyle(aScript);
-        if(!success){
-          return
-        }
+    if(!aStyle.#preLoadedStyle){
+      let success = ScriptData.preLoadAuthorStyle(aStyle);
+      if(!success){
+        return
       }
-      win.windowUtils.addSheet(aScript.#preLoadedStyle,Ci.nsIDOMWindowUtils.AUTHOR_SHEET);
-      return
     }
-    if (aScript.inbackground || aScript.noExec) {
-      return
-    }
-    if(aScript.onlyonce && aScript.#isRunning) {
-      if(aScript.startup){
-        SHARED_GLOBAL[aScript.startup]._startup(win)
-      }
-      return
-    }
-    const injection = aScript.isESM
-      ? ScriptData.injectESMIntoGlobal(aScript,win)
-      : ScriptData.injectClassicScriptIntoGlobal(aScript,win);
-    injection
-    .catch(ex => {
-      console.error(new Error(`@ ${aScript.filename}:${ex.lineNumber}`,{cause:ex}));
-    })
-  }
-  static markScriptRunning(aScript,aGlobal){
-    aScript.#isRunning = true;
-    aScript.startup && SHARED_GLOBAL[aScript.startup]._startup(aGlobal);
+    win.windowUtils.addSheet(aStyle.#preLoadedStyle,Ci.nsIDOMWindowUtils.AUTHOR_SHEET);
     return
   }
-  static injectESMIntoGlobal(aScript,aGlobal){
-    return new Promise((resolve,reject) => {
-      ScriptData.preCompileMJS(aScript)
-      .then(script => script && script.executeInGlobal(aGlobal))
-      .then(() => ScriptData.markScriptRunning(aScript,aGlobal))
-      .then(resolve)
-      .catch( ex => {
-        aScript.#injectionFailed = true;
-        reject(ex)
-      })
-    })
+  static markScriptRunning(aScript){
+    aScript.#isRunning = true;
   }
   static injectClassicScriptIntoGlobal(aScript,aGlobal){
     try{
@@ -221,11 +174,10 @@ class ScriptData {
           ignoreCache: aScript.ignoreCache
         }
       )
-      ScriptData.markScriptRunning(aScript,aGlobal)
+      aScript.#isRunning = true;
       return Promise.resolve(1)
     }catch(ex){
       aScript.#injectionFailed = true;
-      ScriptData.markScriptRunning(aScript,aGlobal)
       return Promise.reject(ex)
     }
   }
@@ -233,7 +185,7 @@ class ScriptData {
     if(aScript.#isRunning){
       return
     }
-    let cmanifest = FS.getEntry(FS.convertChromeURIToFileURI(`chrome://userscripts/content/${aScript.manifest}.manifest`));
+    let cmanifest = FileSystem.getEntry(FileSystem.convertChromeURIToFileURI(`chrome://userscripts/content/${aScript.manifest}.manifest`));
     if(cmanifest.isFile()){
       Components.manager
       .QueryInterface(Ci.nsIComponentRegistrar).autoRegister(cmanifest.entry());
@@ -255,7 +207,7 @@ class ScriptData {
       // This also means that we successfully generate a ScriptData for *folders* named "xx.uc.js"...
       return new ScriptData(aFile.leafName,"",aFile.fileSize === 0,false)
     }
-    const result = FS.readNSIFileSyncUncheckedWithOptions(aFile,{ metaOnly: true });
+    const result = FileSystem.readNSIFileSyncUncheckedWithOptions(aFile,{ metaOnly: true });
     const headerText = this.extractScriptHeader(result);
     // If there are less than 2 bytes after the header then we mark the script as non-executable. This means that if the file only has a header then we don't try to inject it to any windows, since it wouldn't do anything.
     return new ScriptData(aFile.leafName, headerText, headerText.length > aFile.fileSize - 2,false);
@@ -265,18 +217,18 @@ class ScriptData {
       // Smaller files can't possibly have a valid header
       return new ScriptData(aFile.leafName,"",true,true)
     }
-    const result = FS.readNSIFileSyncUncheckedWithOptions(aFile,{ metaOnly: true });
+    const result = FileSystem.readNSIFileSyncUncheckedWithOptions(aFile,{ metaOnly: true });
     return new ScriptData(aFile.leafName, this.extractStyleHeader(result), true,true);
   }
 }
 
 Pref.setIfUnset(PREF_ENABLED,true);
 Pref.setIfUnset(PREF_SCRIPTSDISABLED,"");
-Pref.setIfUnset(PREF_GBROWSERHACKENABLED,false);
 
+// This is called if _previous_ startup was broken
 function showgBrowserNotification(){
-  Services.prefs.setBoolPref(PREF_GBROWSERHACKENABLED,true);
-  utils.showNotification(
+  Services.prefs.setBoolPref('userChromeJS.gBrowser_hack.enabled',true);
+  showNotification(
   {
     label : "fx-autoconfig: Something was broken in last startup",
     type : "fx-autoconfig-gbrowser-notification",
@@ -295,42 +247,24 @@ function showgBrowserNotification(){
   )
 }
 
-function showBrokenNotification(window){
+// This is called if startup somehow takes over 5 seconds
+function maybeShowBrokenNotification(window){
+  if(window.isFullyOccluded && "gBrowser" in window){
+    console.log("Window was fully occluded, no need to panic")
+    return
+  }
   let aNotificationBox = window.gNotificationBox;
   aNotificationBox.appendNotification(
     "fx-autoconfig-broken-notification",
     {
-      label: "fx-autoconfig: Startup is broken",
+      label: "fx-autoconfig: Startup might be broken",
       image: "chrome://browser/skin/notification-icons/popup.svg",
       priority: "critical"
-    },
-    [{
-      label: "Enable workaround",
-      callback: (notification) => {
-        Services.prefs.setBoolPref("userChromeJS.gBrowser_hack.required",true);
-        utils.restart(false);
-        return false
-      }
-    }]
+    }
   );
 }
 
-function escapeXUL(markup) {
-  return markup.replace(/[<>&'"]/g, (char) => {
-    switch (char) {
-      case `<`:
-        return "&lt;";
-      case `>`:
-        return "&gt;";
-      case `&`:
-        return "&amp;";
-      case `'`:
-        return "&apos;";
-      case '"':
-        return "&quot;";
-    }
-  });
-}
+
 
 function updateMenuStatus(event){
   const menu = event.target;
@@ -342,7 +276,7 @@ function updateMenuStatus(event){
     if(item.getAttribute("type") != "checkbox"){
       continue
     }
-    if (disabledScripts.includes(item.getAttribute("filename"))){
+    if (disabledScripts.includes(item.dataset.filename)){
       item.removeAttribute("checked");
     }else{
       item.setAttribute("checked","true");
@@ -355,60 +289,68 @@ class UserChrome_js{
     this.scripts = [];
     this.styles = [];
     this.SESSION_RESTORED = false;
+    this.IS_ENABLED = Services.prefs.getBoolPref(PREF_ENABLED,false);
     this.isInitialWindow = true;
     this.initialized = false;
     this.init();
   }
-  registerScript(aScript,isEnabled){
+  registerScript(aScript,isDisabled){
     if(aScript.type === "script"){
       this.scripts.push(aScript);
     }else{
       this.styles.push(aScript);
     }
-    if(isEnabled && aScript.manifest){
+    if(!isDisabled && aScript.manifest){
       try{
         ScriptData.registerScriptManifest(aScript);
       }catch(ex){
         console.error(new Error(`@ ${aScript.filename}`,{cause:ex}));
       }
     }
+    return isDisabled
   }
   init(){
     if(this.initialized){
       return
     }
-    loaderModuleLink.setup(this,FX_AUTOCONFIG_VERSION,AppConstants.MOZ_APP_DISPLAYNAME_DO_NOT_USE,APP_VARIANT,SHARED_GLOBAL,ScriptData);
+    loaderModuleLink.setup(this,FX_AUTOCONFIG_VERSION,AppConstants.MOZ_APP_DISPLAYNAME_DO_NOT_USE,APP_VARIANT,ScriptData);
+    
+    if(!this.IS_ENABLED){
+      Services.obs.addObserver(this, 'domwindowopened', false);
+      this.initialized = true;
+      return
+    }
     // gBrowserHack setup
-    const gBrowserHackRequired = Services.prefs.getBoolPref("userChromeJS.gBrowser_hack.required",false) ? 2 : 0;
-    const gBrowserHackEnabled = Services.prefs.getBoolPref(PREF_GBROWSERHACKENABLED,false) ? 1 : 0;
-    this.GBROWSERHACK_ENABLED = gBrowserHackRequired|gBrowserHackEnabled;
+    this.GBROWSERHACK_ENABLED = 
+      (Services.prefs.getBoolPref("userChromeJS.gBrowser_hack.required",false) ? 2 : 0)
+    + (Services.prefs.getBoolPref("userChromeJS.gBrowser_hack.enabled",false) ? 1 : 0);
+    this.PERSISTENT_DOMCONTENT_CALLBACK = Services.prefs.getBoolPref("userChromeJS.persistent_domcontent_callback",false);
     const disabledScripts = getDisabledScripts();
     // load script data
-    const scriptDir = FS.getScriptDir();
+    const scriptDir = FileSystem.getScriptDir();
     if(scriptDir.isDirectory()){
       for(let entry of scriptDir){
         if (/^[A-Za-z0-9]+.*(\.uc\.js|\.uc\.mjs|\.sys\.mjs)$/i.test(entry.leafName)) {
           let script = ScriptData.fromScriptFile(entry);
-          this.registerScript(script,!disabledScripts.includes(script.filename));
+          if(this.registerScript(script,disabledScripts.includes(script.filename))){
+            continue // script is disabled
+          }
           if(script.inbackground){
             try{
               if(script.isESM){
                 ChromeUtils.importESModule( script.chromeURI.spec );
+                ScriptData.markScriptRunning(script);
               }else{
-                ChromeUtils.import( script.chromeURI.spec );
+                console.warn(`Refusing to import legacy jsm style backgroundmodule script: ${script.filename} - convert to ES6 modules instead`);
               }
-              ScriptData.markScriptRunning(script,null);
             }catch(ex){
-              console.error(new Error(`@ ${script.filename}`,{cause:ex}));
+              console.error(new Error(`@ ${script.filename}:${ex.lineNumber}`,{cause:ex}));
             }
-          }
-          if(script.isESM && !script.inbackground){
-            ScriptData.preCompileMJS(script);
           }
         }
       }
     }
-    const styleDir = FS.getStyleDir();
+    const styleDir = FileSystem.getStyleDir();
     if(styleDir.isDirectory()){
       for(let entry of styleDir){
         if (/^[A-Za-z0-9]+.*\.uc\.css$/i.test(entry.leafName)) {
@@ -416,7 +358,7 @@ class UserChrome_js{
           this.registerScript(style,!disabledScripts.includes(style.filename));
         }
       }
-      this.addAgentStyles(this.styles.filter(style => style.styleSheetMode === "agent"));
+      this.addAgentStyles(this.styles.filter(style => style.styleSheetMode === "agent" && !disabledScripts.includes(style.filename)));
     }
     this.scripts.sort((a,b) => a.loadOrder - b.loadOrder);
     this.styles.sort((a,b) => a.loadOrder - b.loadOrder);
@@ -441,53 +383,58 @@ class UserChrome_js{
     const window = document.defaultView;
     if(!(/^chrome:(?!\/\/global\/content\/(commonDialog|alerts\/alert)\.xhtml)|about:(?!blank)/i).test(window.location.href)){
       // Don't inject scripts to modal prompt windows or notifications
-      if(this.styles.length > 0){
+      if(this.IS_ENABLED && this.styles.length > 0){
         const disabledScripts = getDisabledScripts();
         for(let style of this.styles){
           if(!disabledScripts.includes(style.filename)){
-            ScriptData.tryLoadScriptIntoWindow(style,window)
+            ScriptData.tryLoadStyleIntoWindow(style,window)
           }
         }
       }
       return
     }
-    ChromeUtils.defineESModuleGetters(window,{
-      _ucUtils: "chrome://userchromejs/content/utils.sys.mjs"
-    });
-    document.allowUnsafeHTML = false; // https://bugzilla.mozilla.org/show_bug.cgi?id=1432966
-    
-    // This is a hack to make gBrowser available for scripts.
-    // Without it, scripts would need to check if gBrowser exists and deal
-    // with it somehow. See bug 1443849
-    const _gb = APP_VARIANT.FIREFOX && "_gBrowser" in window;
-    if(this.GBROWSERHACK_ENABLED && _gb){
-      window.gBrowser = window._gBrowser;
-    }else if(_gb && this.isInitialWindow){
-      this.isInitialWindow = false;
-      let timeout = window.setTimeout(() => {
-        showBrokenNotification(window);
-      },5000);
-      utils.windowIsReady(window)
-      .then(() => {
-        // startup is fine, clear timeout
-        window.clearTimeout(timeout);
-      })
-    }
-    
-    // Inject scripts to window
-    if(Services.prefs.getBoolPref(PREF_ENABLED,false)){
+    ChromeUtils.defineLazyGetter(window,"UC_API",() =>
+      ChromeUtils.importESModule("chrome://userchromejs/content/uc_api.sys.mjs")
+    )
+    if(this.IS_ENABLED){
+      document.allowUnsafeHTML = false; // https://bugzilla.mozilla.org/show_bug.cgi?id=1432966
+      
+      // This is a hack to make gBrowser available for scripts.
+      // Without it, scripts would need to check if gBrowser exists and deal
+      // with it somehow. See bug 1443849
+      const _gb = APP_VARIANT.FIREFOX && "_gBrowser" in window;
+      if(this.GBROWSERHACK_ENABLED && _gb){
+        window.gBrowser = window._gBrowser;
+      }else if(_gb && this.isInitialWindow){
+        this.isInitialWindow = false;
+        let timeout = window.setTimeout(() => {
+          maybeShowBrokenNotification(window);
+        },5000);
+        windowUtils.waitWindowLoading(window)
+        .then(() => {
+          // startup is fine, clear timeout
+          window.clearTimeout(timeout);
+        })
+      }
+      // Inject scripts to window
       const disabledScripts = getDisabledScripts();
-      for(let script of this.scripts){
-        if(script.inbackground || script.injectionFailed){
+      // Note, sys.mjs scripts have .regex = null
+      const scriptsForWindow = this.scripts.filter(s => s.regex?.test(window.location.href));
+      
+      // .uc.mjs scripts are loaded via module loader
+      if(scriptsForWindow.some(s => s.isESM && !disabledScripts.includes(s.filename))){
+        MODULE_LOADER.ready().then(m => m.executeInGlobal(window));
+      }
+      
+      for(let script of scriptsForWindow){
+        if(script.isESM || disabledScripts.includes(script.filename) || script.injectionFailed || script.noExec || (script.onlyonce && script.isRunning)) {
           continue
         }
-        if(!disabledScripts.includes(script.filename)){
-          ScriptData.tryLoadScriptIntoWindow(script,window)
-        }
+        ScriptData.injectClassicScriptIntoGlobal(script,window)
       }
       for(let style of this.styles){
         if(!disabledScripts.includes(style.filename)){
-          ScriptData.tryLoadScriptIntoWindow(style,window)
+          ScriptData.tryLoadStyleIntoWindow(style,window)
         }
       }
     }
@@ -524,9 +471,9 @@ class UserChrome_js{
       <menu id="userScriptsMenu" label="userScripts">
         <menupopup id="menuUserScriptsPopup">
           <menuseparator></menuseparator>
-          <menuitem id="userScriptsMenu-OpenFolder" label="Open folder" oncommand="_ucUtils.openScriptDir()"></menuitem>
-          <menuitem id="userScriptsMenu-Restart" label="Restart" oncommand="_ucUtils.restart(true)" tooltiptext="Toggling scripts requires restart"></menuitem>
-          <menuitem id="userScriptsMenu-ClearCache" label="Restart and clear startup cache" oncommand="_ucUtils.restart(true)" tooltiptext="Toggling scripts requires restart"></menuitem>
+          <menuitem id="userScriptsMenu-OpenFolder" label="Open folder"></menuitem>
+          <menuitem id="userScriptsMenu-Restart" label="Restart" tooltiptext="Toggling scripts requires restart"></menuitem>
+          <menuitem id="userScriptsMenu-ClearCache" label="Restart and clear startup cache" tooltiptext="Toggling scripts requires restart"></menuitem>
         </menupopup>
       </menu>
     `);
@@ -540,12 +487,33 @@ class UserChrome_js{
         UserChrome_js.appendScriptMenuitemToFragment(window,itemsFragment,style);
       }
     }
-    menuFragment.getElementById("menuUserScriptsPopup").prepend(itemsFragment);
+    if(!this.IS_ENABLED){
+      itemsFragment.append(window.MozXULElement.parseXULToFragment('<menuitem label="&lt;fx-autoconfig is disabled&gt;" disabled="true"></menuitem>'));
+    }
+    let menupopup = menuFragment.getElementById("menuUserScriptsPopup");
+    menupopup.prepend(itemsFragment);
     popup.prepend(menuFragment);
-    popup.querySelector("#menuUserScriptsPopup").addEventListener("popupshown",updateMenuStatus);
+    menupopup.addEventListener("popupshown",updateMenuStatus);
+    menupopup.addEventListener("command",ev => {
+      switch(ev.target.id){
+        case "userScriptsMenu-OpenFolder":
+          FileSystem.getScriptDir().showInFileManager();
+          break;
+        case "userScriptsMenu-Restart":
+          restartApplication(false);
+          break;
+        case "userScriptsMenu-ClearCache":
+          restartApplication(true);
+          break;
+        default:
+          if(ev.target.dataset.filename){
+            toggleScript(ev.target.dataset.filename);
+          }
+      }
+    });
     aDoc.l10n.formatValues(["restart-button-label","clear-startup-cache-label","show-dir-label"])
     .then(values => {
-      let baseTitle = `${values[0]} ${utils.brandName}`;
+      let baseTitle = `${values[0]} ${BRAND_NAME}`;
       aDoc.getElementById("userScriptsMenu-Restart").setAttribute("label", baseTitle);
       aDoc.getElementById("userScriptsMenu-ClearCache").setAttribute("label", values[1].replace("…","") + " & " + baseTitle);
       aDoc.getElementById("userScriptsMenu-OpenFolder").setAttribute("label",values[2])
@@ -557,16 +525,15 @@ class UserChrome_js{
       aWindow.MozXULElement.parseXULToFragment(`
         <menuitem type="checkbox"
                   label="${escapeXUL(aScript.name || aScript.filename)}"
-                  filename="${escapeXUL(aScript.filename)}"
-                  checked="true"
-                  oncommand="_ucUtils.toggleScript(this)">
+                  data-filename="${escapeXUL(aScript.filename)}"
+                  checked="true">
         </menuitem>
     `)
     );
     return
   }
   observe(aSubject, aTopic, aData) {
-    aSubject.addEventListener('DOMContentLoaded', this, true);
+    aSubject.addEventListener('DOMContentLoaded', this, {once: !this.PERSISTENT_DOMCONTENT_CALLBACK, capture: true});
   }
   
   handleEvent(aEvent){
@@ -582,13 +549,13 @@ class UserChrome_js{
 }
 
 const _ucjs = !Services.appinfo.inSafeMode && new UserChrome_js();
-_ucjs && utils.startupFinished().then(() => {
+_ucjs && startupFinished().then(() => {
   _ucjs.SESSION_RESTORED = true;
   _ucjs.GBROWSERHACK_ENABLED === 2 && showgBrowserNotification();
   if(Pref.setIfUnset("userChromeJS.firstRunShown",true)){
-    utils.showNotification({
+    showNotification({
       type: "fx-autoconfig-installed",
-      label: `fx-autoconfig: ${utils.brandName} is being modified with custom autoconfig scripting`
+      label: `fx-autoconfig: ${BRAND_NAME} is being modified with custom autoconfig scripting`
     });
   }
 });

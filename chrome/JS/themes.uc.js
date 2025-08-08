@@ -3,6 +3,7 @@
 // @author      Dominic Hayes
 // @loadorder   2
 // @include		main
+// @include           chrome://browser/content/places/places.xhtml
 // ==/UserScript==
 
 const { ColorUtils } = ChromeUtils.importESModule("chrome://modules/content/ChromiumColorUtils.sys.mjs");
