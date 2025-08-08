@@ -5,7 +5,7 @@ since firefox added window transparency in latest nightly build i had to commemo
 on windows 10: transparency breaks after minimizing the window maximizing/restoring it fixes this - fixed in the most stupid way (make sure to have firefox theme set to auto)
 
 ## how do i plex
-1. install ff128
+1. install ff
 2. go to help > more troubleshooting information > profile folder
 3. copy contents of "firefox" folder to the directory you installed your browser in
 4. copy "chrome" folder to your profile folder
